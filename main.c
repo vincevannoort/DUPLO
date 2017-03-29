@@ -1,6 +1,6 @@
 #pragma config(Sensor, S3, lightSensor, sensorLightActive)
 #pragma config(Sensor, S2, sonarSensor, sensorSONAR)
-#pragma config(Sensor, S1, colorPort,  sensorColorNxtFULL)
+#pragma config(Sensor, S1, colorPort,  sensorColorNxtRED)
 #include "steering.h"
 //#include "monitoring.h"
 //#include "commands.h"
@@ -25,36 +25,31 @@ task main()
 	int direction = 0;
 
 	// max speed is 50
-	int speed = 10;
+	int speed = 12;
 	while (status >= 0){
-				// 0 is darker 100 is lighter
+		// white is 60 black is 30
 		int right_sensor = SensorValue(lightSensor);
-		// 1 = black 6 = white
+		// white is 47 black is 20
 		int left_sensor = SensorValue[colorPort];
 
-		nxtDisplayTextLine(4, "Color: %d",left_sensor);
-		nxtDisplayTextLine(5, "Light: %d",right_sensor);
+		nxtDisplayTextLine(4, "Left: %d",left_sensor);
+		nxtDisplayTextLine(5, "Right: %d",right_sensor);
 
 		int distance = SensorValue[sonarSensor];
 		nxtDisplayTextLine(2, "Distance: %d",distance);
-		int temp_once = 1;
 		if ( distance < 15 ){
 			brake(10);
-			if (temp_once == 1) {
-				PlaySoundFile("allahu.rso");
-				temp_once = 0;
-			}
 		}
 
 		// Forward
-		if(right_sensor > 45 && left_sensor == 6){
+		if(right_sensor > 45 && left_sensor > 40){
 			displayTextLine(3, " Forward");
 			status = 1;
 			drive(speed);
 		}
 
 		// Crossroad
-		else if (right_sensor < 45 && left_sensor == 1){
+		else if (right_sensor < 45 && left_sensor < 40){
 
 			if (status != 3){
 				drive(-5);
@@ -65,19 +60,20 @@ task main()
 		}
 
 		//Left turn
-		else if (right_sensor > 45 && left_sensor == 1 ){
+		else if (left_sensor < 47  ){
 			displayTextLine(3, " Left");
 			status = 2;
 			direction = 1;
-			turn(-12,speed);
+			turn(-12, (speed * left_sensor)/20);
+
 		}
 
 		// Right turn
-		else if (right_sensor < 45 && left_sensor == 6){
+		else if (right_sensor < 60 ){
 			displayTextLine(3, " Right");
 			status = 2;
 			direction = 2;
-			turn(12,speed);
+			turn(12, (speed * right_sensor)/30);
 		}
 	}
 }

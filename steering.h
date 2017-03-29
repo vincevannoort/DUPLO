@@ -14,13 +14,13 @@ void drive(int speed){
 void turn(int degrees, int speed){
 	// right turn
 	if(degrees >= 0){
-			motor[motorA] = (speed * 1);
-			motor[motorC] = -(speed * 1.75);
+			motor[motorA] = (speed * 0.5);
+			motor[motorC] = -(speed * 0.5);
 		}
 		//left turn
 	else if (degrees < 0){
-			motor[motorA] = -(speed * 1.75);
-			motor[motorC] = (speed * 1);
+			motor[motorA] = -(speed * 0.5);
+			motor[motorC] = (speed * 0.5);
 	}
 }
 /*! \brief Stop the robot in a certain time

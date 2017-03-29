@@ -37,8 +37,13 @@ task main()
 
 		int distance = SensorValue[sonarSensor];
 		nxtDisplayTextLine(2, "Distance: %d",distance);
+		int temp_once = 1;
 		if ( distance < 15 ){
 			brake(10);
+			if (temp_once == 1) {
+				PlaySoundFile("allahu.rso");
+				temp_once = 0;
+			}
 		}
 
 		// Forward

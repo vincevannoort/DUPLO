@@ -23,12 +23,15 @@ task main()
 	*		2 = Right
 	*/
 	int direction = 0;
-	int speed = 4;
+	int speed = 5;
+	int correction = 9;
 
 
 	while (status >= 0){
 		int right_sensor = SensorValue(lightSensor); // white is 60 black is 30
+		int right_sensor_lowest = 30;
 		int left_sensor = SensorValue[colorPort]; // white is 47 black is 20
+		int left_sensor_lowest = 20;
 		int distance = SensorValue[sonarSensor];
 
 		// Temporary debugging values
@@ -43,15 +46,15 @@ task main()
 		}
 
 		// Crossroad detected
-		else if (right_sensor < 35 && left_sensor < 25){
+		else if (right_sensor < 35 && left_sensor < 30){
 			brake(10);
 			status = 3;
 		}
 
 		// Following line
 		else if ( status != 3 && status != 4){
-			motor[motorA] = (((left_sensor - 20) / 3) + ((left_sensor - 20) / 30)) * speed;
-			motor[motorC] = (((right_sensor - 30)/3)) * speed;
+			motor[motorA] = ((((left_sensor - left_sensor_lowest) / 3) + ((left_sensor - left_sensor_lowest) / right_sensor_lowest)) * speed) - correction;
+			motor[motorC] = ((((right_sensor - right_sensor_lowest) / 3)) * speed) - correction;
 		}
 	}
 }

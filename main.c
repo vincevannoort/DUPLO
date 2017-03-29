@@ -41,39 +41,15 @@ task main()
 			brake(10);
 		}
 
-		// Forward
-		if(right_sensor > 45 && left_sensor > 40){
-			displayTextLine(3, " Forward");
-			status = 1;
-			drive(speed);
-		}
 
 		// Crossroad
-		else if (right_sensor < 45 && left_sensor < 40){
-
-			if (status != 3){
-				drive(-5);
-				wait1Msec(250);
-				brake(10);
-			}
+		if (right_sensor < 35 && left_sensor < 25){
+			brake(10);
 			status = 3;
 		}
-
-		//Left turn
-		else if (left_sensor < 47  ){
-			displayTextLine(3, " Left");
-			status = 2;
-			direction = 1;
-			turn(-12, (speed * left_sensor)/20);
-
-		}
-
-		// Right turn
-		else if (right_sensor < 60 ){
-			displayTextLine(3, " Right");
-			status = 2;
-			direction = 2;
-			turn(12, (speed * right_sensor)/30);
+		else if ( status != 3){
+			motor[motorA] = (((left_sensor - 20) / 3) + ((left_sensor - 20) / 30)) * 4;
+			motor[motorC] = (((right_sensor - 30)/3)) * 4;
 		}
 	}
 }

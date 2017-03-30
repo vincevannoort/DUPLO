@@ -36,6 +36,7 @@ task main(){
 	int turn_value = 7;
 	int reverse_turn_value = -1;
 	int turn_time = 1000; // milliseconds
+	PlaySoundFile("duplo.rso");
 
 	while (status >= 0)
 	{

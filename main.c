@@ -63,6 +63,7 @@ task main(){
 			stringFromChars(s, (char *) nRcvBuffer);
 			if (s == "UP"){
 				displayCenteredTextLine(3,"We go up");
+				next_crossroad = 3;
 				status = 1;
 			}
 			else if (s == "LEFT"){

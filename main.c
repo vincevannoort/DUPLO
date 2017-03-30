@@ -51,11 +51,11 @@ task main(){
 		nxtDisplayTextLine(2, "Distance: %d",distance);
 
 		// Check for bluetooth
-		check_bluetooth(&status, &next_crossroad);
+		check_bluetooth(&status, &next_crossroad, &speed);
 
 		// Obstacle detected
 		if ( distance < 15 ){
-			brake(10);
+			brake(10,&speed);
 			status = 4;
 		}
 
@@ -63,7 +63,7 @@ task main(){
 		else if (right_sensor < 35 && left_sensor < 30){
 			status = 3;
 			if ( next_crossroad  == 0 ){
-				brake(10);
+				brake(10,&speed);
 			}
 			// turn left @ crossroad
 			else if (next_crossroad  == 1){

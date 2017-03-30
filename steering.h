@@ -27,7 +27,8 @@ void turn(int degrees, int speed){
  *
  *	\param[in] int time_to_stop, the time in wich the robot must be stading still
  */
-void brake(int time_to_stop){
+void brake(int time_to_stop, int *speed){
 	motor[motorA] = 0;
 	motor[motorC] = 0;
+	*speed = 5;
 }

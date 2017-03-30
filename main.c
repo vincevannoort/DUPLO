@@ -44,6 +44,9 @@ task main(){
 	int direction = 0;
 	int speed = 5;
 	int correction = 9;
+	int turn_value = 7;
+	int reverse_turn_value = -1;
+	int turn_time = 1000; // milliseconds
 
 	while (status >= 0)
 	{
@@ -98,26 +101,36 @@ task main(){
 
 		// Crossroad detected
 		else if (right_sensor < 35 && left_sensor < 30){
-				status = 3;
+			status = 3;
 			if ( next_crossroad  == 0 ){
 				brake(10);
 
 			}
+			// turn left @ crossroad
 			else if (next_crossroad  == 1){
-				// turn left
+				motor[motorC] = turn_value * speed;
+				motor[motorA] = reverse_turn_value * speed;
+				wait1Msec(turn_time);
 			}
+			// turn right @ crossroad
 			else if (next_crossroad == 2){
-				// turn right
+				motor[motorA] = turn_value * speed;
+				motor[motorC] = reverse_turn_value * speed;
+				wait1Msec(turn_time);
 			}
+			// go straight @ crossroad
 			else if (next_crossroad == 3){
-				// go straight
+				motor[motorA] = turn_value * speed;
+				motor[motorC] = turn_value * speed;
+				wait1Msec(turn_time);
 			}
 			status = 1;
-	}
-			// Following line
-			else if ( status != 3 && status != 4 && status != 5){
-				motor[motorA] = ((((left_sensor - left_sensor_lowest) / 3) + ((left_sensor - left_sensor_lowest) / right_sensor_lowest)) * speed) - correction;
-				motor[motorC] = ((((right_sensor - right_sensor_lowest) / 3)) * speed) - correction;
-			}
+			next_crossroad = 0;
+		}
+		// Following line
+		else if ( status != 3 && status != 4 && status != 5){
+			motor[motorA] = ((((left_sensor - left_sensor_lowest) / 3) + ((left_sensor - left_sensor_lowest) / right_sensor_lowest)) * speed) - correction;
+			motor[motorC] = ((((right_sensor - right_sensor_lowest) / 3)) * speed) - correction;
 		}
 	}
+}

@@ -21,6 +21,7 @@ task main(){
 	*	0 = stop
 	*	1 = turn left
 	*	2 = turn right
+	* 3 = go straight
 	*/
 	int next_crossroad = 0;
 	/*
@@ -97,16 +98,19 @@ task main(){
 
 		// Crossroad detected
 		else if (right_sensor < 35 && left_sensor < 30){
-
+				status = 3;
 			if ( next_crossroad  == 0 ){
 				brake(10);
-				status = 3;
+
 			}
 			else if (next_crossroad  == 1){
 				// turn left
 			}
 			else if (next_crossroad == 2){
 				// turn right
+			}
+			else if (next_crossroad == 3){
+				// go straight
 			}
 
 			// Following line

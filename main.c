@@ -35,8 +35,13 @@ task main(){
 	int correction = 9;
 	int turn_value = 7;
 	int reverse_turn_value = -1;
+<<<<<<< HEAD
 	int right_sensor_black = 35;
 	int left_sensor_black = 30;
+=======
+	int turn_time = 1000; // milliseconds
+	PlaySoundFile("duplo.rso");
+>>>>>>> 3d5fd1425a38695e37f4eb40e2ea674003218411
 
 	while (status >= 0)
 	{
@@ -52,11 +57,11 @@ task main(){
 		nxtDisplayTextLine(2, "Distance: %d",distance);
 
 		// Check for bluetooth
-		check_bluetooth(&status, &next_crossroad);
+		check_bluetooth(&status, &next_crossroad, &speed);
 
 		// Obstacle detected
 		if ( distance < 15 ){
-			brake(10);
+			brake(10,&speed);
 			status = 4;
 		}
 
@@ -64,7 +69,7 @@ task main(){
 		else if (right_sensor < right_sensor_black && left_sensor < left_sensor_black){
 			status = 3;
 			if ( next_crossroad  == 0 ){
-				brake(10);
+				brake(10,&speed);
 			}
 			// turn left @ crossroad
 			else if (next_crossroad  == 1){

@@ -35,8 +35,13 @@ task main(){
 	int correction = 9;
 	int turn_value = 7;
 	int reverse_turn_value = -1;
+
+	int right_sensor_black = 35;
+	int left_sensor_black = 30;
+
 	int turn_time = 1000; // milliseconds
 
+	PlaySoundFile("duplo.rso");
 
 	while (status >= 0)
 	{
@@ -62,31 +67,33 @@ task main(){
 		}
 
 		// Crossroad detected
-		else if (right_sensor < 35 && left_sensor < 30){
+		else if (right_sensor < right_sensor_black && left_sensor < left_sensor_black){
 			status = 3;
 			if ( next_crossroad  == 0 ){
 				brake(10,&speed);
 			}
 			// turn left @ crossroad
 			else if (next_crossroad  == 1){
-				motor[motorC] = turn_value * speed;
-				motor[motorA] = reverse_turn_value * speed;
-				wait1Msec(turn_time);
+				turn(reverse_turn_value, turn_value, speed);
 			}
 			// turn right @ crossroad
 			else if (next_crossroad == 2){
-				motor[motorA] = turn_value * speed;
-				motor[motorC] = reverse_turn_value * speed;
-				wait1Msec(turn_time);
+				turn(turn_value, reverse_turn_value, speed);
 			}
 			// go straight @ crossroad
 			else if (next_crossroad == 3){
-				motor[motorA] = turn_value * speed;
-				motor[motorC] = turn_value * speed;
-				wait1Msec(turn_time);
+				turn(turn_value, turn_value, speed);
 			}
 			status = 1;
 			next_crossroad = 0;
+		}
+		// turn right @ crossroad
+		else if (right_sensor < right_sensor_black && left_sensor > 40) {
+			turn(turn_value, reverse_turn_value, speed);
+		}
+		// turn left @ crossroad
+		else if (left_sensor < left_sensor_black && right_sensor > 52) {
+			turn(reverse_turn_value, turn_value, speed);
 		}
 		// Following line
 		else if ( status != 3 && status != 4 && status != 5){

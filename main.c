@@ -112,7 +112,8 @@ task main(){
 			else if (next_crossroad == 3){
 				// go straight
 			}
-
+			status = 1;
+	}
 			// Following line
 			else if ( status != 3 && status != 4 && status != 5){
 				motor[motorA] = ((((left_sensor - left_sensor_lowest) / 3) + ((left_sensor - left_sensor_lowest) / right_sensor_lowest)) * speed) - correction;
@@ -120,4 +121,3 @@ task main(){
 			}
 		}
 	}
-}

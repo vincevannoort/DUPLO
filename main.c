@@ -36,10 +36,11 @@ task main(){
 	int turn_value = 7;
 	int reverse_turn_value = -1;
 	int turn_time = 1000; // milliseconds
-	PlaySoundFile("duplo.rso");
+
 
 	while (status >= 0)
 	{
+		playSoundFile("duplo.rso");
 		int right_sensor = SensorValue(lightSensor); // white is 60 black is 30
 		int right_sensor_lowest = 30;
 		int left_sensor = SensorValue[colorPort]; // white is 47 black is 20

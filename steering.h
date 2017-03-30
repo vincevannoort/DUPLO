@@ -30,5 +30,6 @@ void turn(int degrees, int speed){
 void brake(int time_to_stop, int *speed){
 	motor[motorA] = 0;
 	motor[motorC] = 0;
+	ClearSounds();
 	*speed = 5;
 }

@@ -2,21 +2,10 @@
 #pragma config(Sensor, S2, sonarSensor, sensorSONAR)
 #pragma config(Sensor, S1, colorPort,  sensorColorNxtRED)
 #include "steering.h"
+#include "commands.h"
 //#include "monitoring.h"
-//#include "commands.h"
-
-long nLastXmitTimeStamp = nPgmTime;
-long nDeltaTime         = 0;
-
-const int kMaxSizeOfMessage = 30;
-const int INBOX = 5;
 
 task main(){
-	// Bluetooth vars
-	TFileIOResult nBTCmdRdErrorStatus;
-	int nSizeOfMessage;
-	ubyte nRcvBuffer[kMaxSizeOfMessage];
-
 	/*
 	*	0 = stop
 	*	1 = turn left
@@ -50,39 +39,6 @@ task main(){
 
 	while (status >= 0)
 	{
-		// Check to see if a message is available
-
-		nSizeOfMessage = cCmdMessageGetSize(INBOX);
-
-		if (nSizeOfMessage > kMaxSizeOfMessage)
-			nSizeOfMessage = kMaxSizeOfMessage;
-		if (nSizeOfMessage > 0){
-			nBTCmdRdErrorStatus = cCmdMessageRead(nRcvBuffer, nSizeOfMessage, INBOX);
-			nRcvBuffer[nSizeOfMessage] = '\0';
-			string s = "";
-			stringFromChars(s, (char *) nRcvBuffer);
-			if (s == "UP"){
-				displayCenteredTextLine(3,"We go up");
-				next_crossroad = 3;
-				status = 1;
-			}
-			else if (s == "LEFT"){
-				displayCenteredTextLine(3,"To the left it is");
-				next_crossroad = 1;
-			}
-			else if (s == "RIGHT"){
-				displayCenteredTextLine(3,"Make a rigth turn");
-				next_crossroad = 2;
-			}
-			else if (s == "DOWN"){
-				status = 5;
-				brake(10);
-			}
-
-			displayCenteredTextLine(4, s);
-		}
-
-
 		int right_sensor = SensorValue(lightSensor); // white is 60 black is 30
 		int right_sensor_lowest = 30;
 		int left_sensor = SensorValue[colorPort]; // white is 47 black is 20
@@ -93,6 +49,9 @@ task main(){
 		nxtDisplayTextLine(4, "Left: %d",left_sensor);
 		nxtDisplayTextLine(5, "Right: %d",right_sensor);
 		nxtDisplayTextLine(2, "Distance: %d",distance);
+
+		// Check for bluetooth
+		check_bluetooth();
 
 		// Obstacle detected
 		if ( distance < 15 ){
@@ -105,7 +64,6 @@ task main(){
 			status = 3;
 			if ( next_crossroad  == 0 ){
 				brake(10);
-
 			}
 			// turn left @ crossroad
 			else if (next_crossroad  == 1){

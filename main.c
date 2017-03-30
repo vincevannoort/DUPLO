@@ -4,8 +4,25 @@
 #include "steering.h"
 //#include "monitoring.h"
 //#include "commands.h"
-task main()
-{
+
+long nLastXmitTimeStamp = nPgmTime;
+long nDeltaTime         = 0;
+
+const int kMaxSizeOfMessage = 30;
+const int INBOX = 5;
+
+task main(){
+	// Bluetooth vars
+	TFileIOResult nBTCmdRdErrorStatus;
+	int nSizeOfMessage;
+	ubyte nRcvBuffer[kMaxSizeOfMessage];
+
+	/*
+	*	0 = stop
+	*	1 = turn left
+	*	2 = turn right
+	*/
+	int next_crossroad = 0;
 	/*
 	*		Status describes the state the robot is currently in.
 	*   0 = Robot does nothing
@@ -13,6 +30,7 @@ task main()
 	*   2 = Making turn
 	* 	3 = On crossroad
 	*  	4 = Obstacle detected
+	*		5 = Robot received stop command
 	*/
 	int status = 0;
 
@@ -26,8 +44,40 @@ task main()
 	int speed = 5;
 	int correction = 9;
 
+	while (status >= 0)
+	{
+		// Check to see if a message is available
 
-	while (status >= 0){
+		nSizeOfMessage = cCmdMessageGetSize(INBOX);
+
+		if (nSizeOfMessage > kMaxSizeOfMessage)
+			nSizeOfMessage = kMaxSizeOfMessage;
+		if (nSizeOfMessage > 0){
+			nBTCmdRdErrorStatus = cCmdMessageRead(nRcvBuffer, nSizeOfMessage, INBOX);
+			nRcvBuffer[nSizeOfMessage] = '\0';
+			string s = "";
+			stringFromChars(s, (char *) nRcvBuffer);
+			if (s == "UP"){
+				displayCenteredTextLine(3,"We go up");
+				status = 1;
+			}
+			else if (s == "LEFT"){
+				displayCenteredTextLine(3,"To the left it is");
+				next_crossroad = 1;
+			}
+			else if (s == "RIGHT"){
+				displayCenteredTextLine(3,"Make a rigth turn");
+				next_crossroad = 2;
+			}
+			else if (s == "DOWN"){
+				status = 5;
+				brake(10);
+			}
+
+			displayCenteredTextLine(4, s);
+		}
+
+
 		int right_sensor = SensorValue(lightSensor); // white is 60 black is 30
 		int right_sensor_lowest = 30;
 		int left_sensor = SensorValue[colorPort]; // white is 47 black is 20
@@ -47,14 +97,23 @@ task main()
 
 		// Crossroad detected
 		else if (right_sensor < 35 && left_sensor < 30){
-			brake(10);
-			status = 3;
-		}
 
-		// Following line
-		else if ( status != 3 && status != 4){
-			motor[motorA] = ((((left_sensor - left_sensor_lowest) / 3) + ((left_sensor - left_sensor_lowest) / right_sensor_lowest)) * speed) - correction;
-			motor[motorC] = ((((right_sensor - right_sensor_lowest) / 3)) * speed) - correction;
+			if ( next_crossroad  == 0 ){
+				brake(10);
+				status = 3;
+			}
+			else if (next_crossroad  == 1){
+				// turn left
+			}
+			else if (next_crossroad == 2){
+				// turn right
+			}
+
+			// Following line
+			else if ( status != 3 && status != 4 && status != 5){
+				motor[motorA] = ((((left_sensor - left_sensor_lowest) / 3) + ((left_sensor - left_sensor_lowest) / right_sensor_lowest)) * speed) - correction;
+				motor[motorC] = ((((right_sensor - right_sensor_lowest) / 3)) * speed) - correction;
+			}
 		}
 	}
 }

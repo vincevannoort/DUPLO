@@ -5,8 +5,7 @@
 * 	\param[in] int speed, speed of the nxt.
 *
 */
-void turn(int motor_left, int motor_right, int speed) {
-	int turn_time = 1000;
+void turn(int motor_left, int motor_right, int speed, int turn_time) {
 
 	motor[motorA] = motor_left * speed;
 	motor[motorC] = motor_right * speed;
@@ -15,21 +14,19 @@ void turn(int motor_left, int motor_right, int speed) {
 
 /*! \brief Stop the robot in a certain time
 *
-*	\param[in] int time_to_stop, the time in wich the robot must be stading still (1/10 second)
+*	\param[in] int time_to_stop, the time in which the robot must be standing still
 */
-void brake(int time_to_stop, int *speed){
-	int default_speed = 10;
-	int i = default_speed / time_to_stop;
+void brake(int time_to_stop, int *speed, int *left_speed, int *right_speed, int *status){
 
-
-	for (; time_to_stop >= 0; --time_to_stop) {
-		motor[motorA] = (default_speed - i) * *speed;
-		motor[motorC] = (default_speed - i) * *speed;
-		wait1Msec(100);
+	for(int i = time_to_stop-1; i > 0; --i){
+		float f = (float)i/(float)time_to_stop;
+		*left_speed *= f;
+		*right_speed *= f;
+		motor[motorA] = *left_speed;
+		motor[motorC] = *right_speed;
+		wait1Msec(50);
 	}
-
-	motor[motorA] = 0;
-	motor[motorC] = 0;
 	clearSounds();
+	*status = 5;
 	*speed = 5;
 }

@@ -6,7 +6,7 @@ TFileIOResult nBTCmdRdErrorStatus;
 int nSizeOfMessage;
 ubyte nRcvBuffer[kMaxSizeOfMessage];
 
-void check_bluetooth(int *status, int *next_crossroad, int *speed) {
+void check_bluetooth(int *status, int *next_crossroad, int *speed, int left_speed, int right_speed) {
     // Check to see if a message is available
     nSizeOfMessage = cCmdMessageGetSize(INBOX);
     if (nSizeOfMessage > kMaxSizeOfMessage)
@@ -30,8 +30,7 @@ void check_bluetooth(int *status, int *next_crossroad, int *speed) {
             *next_crossroad = 2;
         }
         else if (s == "DOWN"){
-            *status = 5;
-            brake(10,speed);
+            brake(100, speed, &left_speed, &right_speed, status);
         }
         else if (s == "FIRE"){
         		*speed +=1;

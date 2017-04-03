@@ -1,6 +1,6 @@
-#pragma config(Sensor, S3, lightSensor, sensorLightActive)
+#pragma config(Sensor, S3, rightSensor, sensorLightActive)
 #pragma config(Sensor, S2, sonarSensor, sensorSONAR)
-#pragma config(Sensor, S1, colorPort,  sensorColorNxtRED)
+#pragma config(Sensor, S1, leftSensor, sensorLightActive)
 #include "steering.h"
 #include "commands.h"
 //#include "monitoring.h"
@@ -13,6 +13,7 @@ task main(){
 	*	3 = go straight
 	*/
 	int next_crossroad = 0;
+
 	/*
 	*	Status describes the state the robot is currently in.
 	*	0 = Robot does nothing
@@ -35,19 +36,19 @@ task main(){
 	int correction = 9;
 	int turn_value = 7;
 	int reverse_turn_value = -1;
+	int turn_time = 900;
+	int left_speed = 0;
+	int right_speed = 0;
 
-	int right_sensor_black = 35;
-	int left_sensor_black = 30;
-
-	int turn_time = 1000; // milliseconds
+	int sensor_lowest_value = 30;
+	int sensor_black_value = 35;
 
 	while (status >= 0)
 	{
-		playSoundFile("duplo.rso");
-		int right_sensor = SensorValue(lightSensor); // white is 60 black is 30
-		int right_sensor_lowest = 30;
-		int left_sensor = SensorValue[colorPort]; // white is 47 black is 20
-		int left_sensor_lowest = 20;
+		if (status == 1)
+			playSoundFile("duplo.rso");
+		int right_sensor = SensorValue(rightSensor); // white is 60 black is 30
+		int left_sensor = SensorValue(leftSensor); // white is 60 black is 30
 		int distance = SensorValue[sonarSensor];
 
 		// Temporary debugging values
@@ -56,47 +57,46 @@ task main(){
 		nxtDisplayTextLine(2, "Distance: %d",distance);
 
 		// Check for bluetooth
-		check_bluetooth(&status, &next_crossroad, &speed);
+		check_bluetooth(&status, &next_crossroad, &speed, left_speed, right_speed);
 
 		// Obstacle detected
-		if ( distance < 25 ){
-			brake(10,&speed);
-			status = 4;
+		if ( distance < 15 ){
+			if (status != 5) {
+				brake(100,&speed, &left_speed, &right_speed, &status);
+				turn(5, -5, speed, turn_time*2);
+			}
+			//status = 4;
 		}
 
 		// Crossroad detected
-		else if (right_sensor < right_sensor_black && left_sensor < left_sensor_black){
+		else if (right_sensor < sensor_black_value && left_sensor < sensor_black_value){
 			status = 3;
 			if ( next_crossroad  == 0 ){
-				brake(10,&speed);
+				brake(100,&speed, &left_speed, &right_speed, &status);
 			}
 			// turn left @ crossroad
 			else if (next_crossroad  == 1){
-				turn(reverse_turn_value, turn_value, speed);
+				turn(reverse_turn_value, turn_value, speed, turn_time);
 			}
 			// turn right @ crossroad
 			else if (next_crossroad == 2){
-				turn(turn_value, reverse_turn_value, speed);
+				turn(turn_value, reverse_turn_value, speed, turn_time);
 			}
 			// go straight @ crossroad
 			else if (next_crossroad == 3){
-				turn(turn_value, turn_value, speed);
+				turn(turn_value, turn_value, speed, turn_time);
 			}
 			status = 1;
 			next_crossroad = 0;
 		}
-		// turn right @ crossroad
-		else if (right_sensor < right_sensor_black && left_sensor > 40) {
-			turn(turn_value, reverse_turn_value, speed);
-		}
-		// turn left @ crossroad
-		else if (left_sensor < left_sensor_black && right_sensor > 52) {
-			turn(reverse_turn_value, turn_value, speed);
-		}
+
 		// Following line
-		else if ( status != 3 && status != 4 && status != 5){
-			motor[motorA] = ((((left_sensor - left_sensor_lowest) / 3) + ((left_sensor - left_sensor_lowest) / right_sensor_lowest)) * speed) - correction;
-			motor[motorC] = ((((right_sensor - right_sensor_lowest) / 3)) * speed) - correction;
+		else if ( status != 3 && status != 4){
+			left_speed = (((left_sensor - sensor_lowest_value) / 3) * speed) - correction;
+			right_speed = (((right_sensor - sensor_lowest_value) / 3) * speed) - correction;
+			motor[motorA] = left_speed;
+			motor[motorC] = right_speed;
+			status = 1;
 		}
 	}
 }

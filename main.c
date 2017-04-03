@@ -1,9 +1,13 @@
 #pragma config(Sensor, S3, rightSensor, sensorLightActive)
 #pragma config(Sensor, S2, sonarSensor, sensorSONAR)
 #pragma config(Sensor, S1, leftSensor, sensorLightActive)
+
+int status;
+
 #include "steering.h"
 #include "commands.h"
 //#include "monitoring.h"
+
 
 task main(){
 	/*
@@ -23,7 +27,7 @@ task main(){
 	*	4 = Obstacle detected
 	*	5 = Robot received stop command
 	*/
-	int status = 0;
+	status = 0;
 
 	/*
 	*	The direction the robot is turning to
@@ -41,7 +45,7 @@ task main(){
 	int right_speed = 0;
 
 	int sensor_lowest_value = 30;
-	int sensor_black_value = 35;
+	int sensor_black_value = 40;
 
 	while (status >= 0)
 	{
@@ -52,27 +56,24 @@ task main(){
 		int distance = SensorValue[sonarSensor];
 
 		// Temporary debugging values
+		nxtDisplayTextLine(1, "Status: %d", status);
 		nxtDisplayTextLine(4, "Left: %d",left_sensor);
 		nxtDisplayTextLine(5, "Right: %d",right_sensor);
-		nxtDisplayTextLine(2, "Distance: %d",distance);
+		//nxtDisplayTextLine(2, "Distance: %d",distance);
 
 		// Check for bluetooth
-		check_bluetooth(&status, &next_crossroad, &speed, left_speed, right_speed);
+		check_bluetooth(&next_crossroad, &speed, left_speed, right_speed);
 
 		// Obstacle detected
-		if ( distance < 15 ){
-			if (status != 5) {
-				brake(100,&speed, &left_speed, &right_speed, &status);
-				turn(5, -5, speed, turn_time*2);
-			}
-			//status = 4;
+		if (distance < 20 && status != 5){
+			avoid_obstacle(&speed, &left_speed, &right_speed, turn_time);
 		}
 
 		// Crossroad detected
 		else if (right_sensor < sensor_black_value && left_sensor < sensor_black_value){
 			status = 3;
 			if ( next_crossroad  == 0 ){
-				brake(100,&speed, &left_speed, &right_speed, &status);
+				brake(0, &speed, &left_speed, &right_speed);
 			}
 			// turn left @ crossroad
 			else if (next_crossroad  == 1){
@@ -86,12 +87,14 @@ task main(){
 			else if (next_crossroad == 3){
 				turn(turn_value, turn_value, speed, turn_time);
 			}
-			status = 1;
+			if (next_crossroad != 0){
+				status = 1;
+			}
 			next_crossroad = 0;
 		}
 
 		// Following line
-		else if ( status != 3 && status != 4){
+		else if ( status != 3 && status != 4 && status != 5){
 			left_speed = (((left_sensor - sensor_lowest_value) / 3) * speed) - correction;
 			right_speed = (((right_sensor - sensor_lowest_value) / 3) * speed) - correction;
 			motor[motorA] = left_speed;

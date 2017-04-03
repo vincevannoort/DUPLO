@@ -41,8 +41,6 @@ task main(){
 
 	int turn_time = 1000; // milliseconds
 
-	PlaySoundFile("duplo.rso");
-
 	while (status >= 0)
 	{
 		playSoundFile("duplo.rso");
@@ -61,7 +59,7 @@ task main(){
 		check_bluetooth(&status, &next_crossroad, &speed);
 
 		// Obstacle detected
-		if ( distance < 15 ){
+		if ( distance < 25 ){
 			brake(10,&speed);
 			status = 4;
 		}

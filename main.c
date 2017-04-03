@@ -10,25 +10,25 @@ task main(){
 	*	0 = stop
 	*	1 = turn left
 	*	2 = turn right
-	* 3 = go straight
+	*	3 = go straight
 	*/
 	int next_crossroad = 0;
 	/*
-	*		Status describes the state the robot is currently in.
-	*   0 = Robot does nothing
-	*   1 = Folowing line
-	*   2 = Making turn
-	* 	3 = On crossroad
-	*  	4 = Obstacle detected
-	*		5 = Robot received stop command
+	*	Status describes the state the robot is currently in.
+	*	0 = Robot does nothing
+	*	1 = Folowing line
+	*	2 = Making turn
+	*	3 = On crossroad
+	*	4 = Obstacle detected
+	*	5 = Robot received stop command
 	*/
 	int status = 0;
 
 	/*
-	* 	The direction the robot is turning to
-	* 	0 = Straight
-	*		1 = Left
-	*		2 = Right
+	*	The direction the robot is turning to
+	*	0 = Straight
+	*	1 = Left
+	*	2 = Right
 	*/
 	int direction = 0;
 	int speed = 5;

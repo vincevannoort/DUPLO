@@ -1,11 +1,3 @@
-/*! \brief Give the robot a certain speed
- *
- *	\param[in] int speed, the speed of the robot
- */
-//void drive(int speed){
-	//motor[motorA] = speed;
-	//motor[motorC] = speed;
-//}
 /*! \brief Turn the robot left or right depending on the degrees given
  *
  *	\param[in] int motor_left, value for the left motor

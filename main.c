@@ -3,6 +3,9 @@
 #pragma config(Sensor, S1, leftSensor, sensorLightActive)
 
 int status;
+int left_speed;
+int right_speed;
+int speed;
 
 #include "steering.h"
 #include "commands.h"
@@ -30,67 +33,47 @@ task main(){
 	status = 0;
 
 	/*
-	*	The direction the robot is turning to
-	*	0 = Straight
-	*	1 = Left
-	*	2 = Right
+	* Controlling robot's speed
 	*/
-	int direction = 0;
-	int speed = 5;
-	int correction = 9;
+	speed = 5;
+	left_speed = 0;
+	right_speed = 0;
+
 	int turn_value = 7;
 	int reverse_turn_value = -1;
 	int turn_time = 900;
-	int left_speed = 0;
-	int right_speed = 0;
+	int correction = 9;
 
 	int sensor_lowest_value = 30;
-	int sensor_black_value = 40;
+	int sensor_black_value = 45;
 
 	while (status >= 0)
 	{
-		if (status == 1)
-			playSoundFile("duplo.rso");
 		int right_sensor = SensorValue(rightSensor); // white is 60 black is 30
 		int left_sensor = SensorValue(leftSensor); // white is 60 black is 30
 		int distance = SensorValue[sonarSensor];
+
+		if (status == 1) {
+			playSoundFile("duplo.rso");
+		}
 
 		// Temporary debugging values
 		nxtDisplayTextLine(1, "Status: %d", status);
 		nxtDisplayTextLine(4, "Left: %d",left_sensor);
 		nxtDisplayTextLine(5, "Right: %d",right_sensor);
-		//nxtDisplayTextLine(2, "Distance: %d",distance);
+		nxtDisplayTextLine(2, "Distance: %d",distance);
 
 		// Check for bluetooth
-		check_bluetooth(&next_crossroad, &speed, left_speed, right_speed);
+		check_bluetooth(&next_crossroad);
 
 		// Obstacle detected
 		if (distance < 20 && status != 5){
-			avoid_obstacle(&speed, &left_speed, &right_speed, turn_time);
+			avoid_obstacle(turn_time);
 		}
 
 		// Crossroad detected
 		else if (right_sensor < sensor_black_value && left_sensor < sensor_black_value){
-			status = 3;
-			if ( next_crossroad  == 0 ){
-				brake(0, &speed, &left_speed, &right_speed);
-			}
-			// turn left @ crossroad
-			else if (next_crossroad  == 1){
-				turn(reverse_turn_value, turn_value, speed, turn_time);
-			}
-			// turn right @ crossroad
-			else if (next_crossroad == 2){
-				turn(turn_value, reverse_turn_value, speed, turn_time);
-			}
-			// go straight @ crossroad
-			else if (next_crossroad == 3){
-				turn(turn_value, turn_value, speed, turn_time);
-			}
-			if (next_crossroad != 0){
-				status = 1;
-			}
-			next_crossroad = 0;
+			handle_crossroad(&next_crossroad, turn_value, reverse_turn_value, turn_time);
 		}
 
 		// Following line

@@ -42,8 +42,6 @@ task main(){
 	int turn_value = 7;
 	int reverse_turn_value = -1;
 	int turn_time = 900;
-	int correction = 9;
-
 	int sensor_lowest_value = 30;
 	int sensor_black_value = 45;
 
@@ -78,11 +76,7 @@ task main(){
 
 		// Following line
 		else if ( status != 3 && status != 4 && status != 5){
-			left_speed = (((left_sensor - sensor_lowest_value) / 3) * speed) - correction;
-			right_speed = (((right_sensor - sensor_lowest_value) / 3) * speed) - correction;
-			motor[motorA] = left_speed;
-			motor[motorC] = right_speed;
-			status = 1;
+			drive(left_sensor, right_sensor, sensor_lowest_value);
 		}
 	}
 }

@@ -69,3 +69,12 @@ void handle_crossroad(int *next_crossroad, int turn_value, int reverse_turn_valu
 	}
 	*next_crossroad = 0;
 }
+
+void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
+	int correction = 9;
+	left_speed = (((left_sensor - sensor_lowest_value) / 3) * speed) - correction;
+	right_speed = (((right_sensor - sensor_lowest_value) / 3) * speed) - correction;
+	motor[motorA] = left_speed;
+	motor[motorC] = right_speed;
+	status = 1;
+}

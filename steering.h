@@ -67,20 +67,19 @@ void handle_crossroad(int *next_crossroad, int turn_value, int reverse_turn_valu
 	status = 3;
 	if (*next_crossroad  == 0 ){
 		brake(0);
-	}
-	// turn left
-	else if (*next_crossroad  == 1){
-		turn(reverse_turn_value, turn_value, turn_time);
-	}
-	// turn right
-	else if (*next_crossroad == 2){
-		turn(turn_value, reverse_turn_value, turn_time);
-	}
-	// go straight
-	else if (*next_crossroad == 3){
-		turn(turn_value, turn_value, turn_time);
-	}
-	if (*next_crossroad != 0){
+	} else {
+		// turn left
+		if (*next_crossroad  == 1){
+			turn(reverse_turn_value, turn_value, turn_time);
+		}
+		// turn right
+		else if (*next_crossroad == 2){
+			turn(turn_value, reverse_turn_value, turn_time);
+		}
+		// go straight
+		else if (*next_crossroad == 3){
+			turn(turn_value, turn_value, turn_time/2);
+		}
 		status = 1;
 	}
 	*next_crossroad = 0;

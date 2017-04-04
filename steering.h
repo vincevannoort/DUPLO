@@ -1,10 +1,13 @@
-/*! \brief Turn the robot left or right depending on the degrees given
-*
-*	\param[in] int motor_left, value for the left motor
-*  \param[in] int motor_right, value for the right motor
-* 	\param[in] int speed, speed of the nxt.
-*
-*/
+/*! \file
+ *  \brief This file provides the steering functions for the robot.
+ */
+
+/*! \brief Turn the robot left or right depending on the degrees given.
+ *
+ *  \param[in] int motor_left Value for the left motor
+ *  \param[in] int motor_right Value for the right motor
+ * 	\param[in] int turn_time Delay between each step in the turning process.
+ */
 void turn(int motor_left, int motor_right, int turn_time) {
 	left_speed = motor_left * speed;
 	right_speed = motor_right * speed;
@@ -13,10 +16,10 @@ void turn(int motor_left, int motor_right, int turn_time) {
 	wait1Msec(turn_time);
 }
 
-/*! \brief Stop the robot in a certain time
-*
-*	\param[in] int time_to_stop, the time in which the robot must be standing still
-*/
+/*! \brief Stop the robot in a given time.
+ *
+ *	\param[in] int time_to_stop, the time in which the robot must be standing still
+ */
 void brake(int time_to_stop){
 	if (time_to_stop != 0) {
 		for(int i = time_to_stop-1; i > 0; --i){
@@ -40,13 +43,26 @@ void brake(int time_to_stop){
 	status = 5;
 	speed = 5;
 }
-
+/*! \brief Let the robot stop and then make a 180 degree turn.
+ *
+ *  \param[in] int turn_time The time in wich the robot makes the turn.
+ */
 void avoid_obstacle(int turn_time){
 	brake(100);
 	turn(5, -5, turn_time*2);
 	status = 1;
 }
 
+/*! \brief Gives the robot instructions when it reaches a crossroad.
+ *	 Check if a instruction is given by the app. If that is the case the robot will execute the given action.
+ *	 If no option is given the robot will stop. It will clear the next_crossroad variable so new instructions
+ *   can be given or the robot will stop at the next crossroad.
+ *
+ *  \param[in] int *next_crossroad Pointer to the value with instructions for the next turn.
+ *  \param[in] int turn_value Speed for the forward moving motor.
+ *  \param[in] int reverse_turn_value Speed for the reverse moving motor.
+ *  \param[in] int turn_time Time the robot waits between each step in the turning process.
+ */
 void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int turn_time){
 	int next_crossroad_queue_item = dequeue(next_crossroad_queue);
 	status = 3;
@@ -70,6 +86,12 @@ void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_t
 	}
 }
 
+/*! \brief Let the robot follow a line.
+ *
+ *  \param[in] int left_sensor Value of the left light sensor.
+ *  \param[in] int right_sensor Value of the right sensor.
+ *  \param[in] int sensor_lowest_value The lowest value with a migration background.
+*/
 void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
 	int correction = 9;
 	left_speed = (((left_sensor - sensor_lowest_value) / 3) * speed) - correction;

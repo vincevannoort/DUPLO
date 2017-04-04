@@ -63,26 +63,27 @@ void avoid_obstacle(int turn_time){
  *  \param[in] int reverse_turn_value Speed for the reverse moving motor.
  *  \param[in] int turn_time Time the robot waits between each step in the turning process.
  */
-void handle_crossroad(int *next_crossroad, int turn_value, int reverse_turn_value, int turn_time){
+void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int turn_time){
+	int next_crossroad_queue_item = dequeue(next_crossroad_queue);
 	status = 3;
-	if (*next_crossroad  == 0 ){
+
+	if (next_crossroad_queue_item  == 0 ){
 		brake(0);
 	} else {
-		// turn left
-		if (*next_crossroad  == 1){
+		// turn left @ crossroad
+		if (next_crossroad_queue_item  == 1){
 			turn(reverse_turn_value, turn_value, turn_time);
 		}
-		// turn right
-		else if (*next_crossroad == 2){
+		// turn right @ crossroad
+		else if (next_crossroad_queue_item == 2){
 			turn(turn_value, reverse_turn_value, turn_time);
 		}
-		// go straight
-		else if (*next_crossroad == 3){
+		// go straight @ crossroad
+		else if (next_crossroad_queue_item == 3){
 			turn(turn_value, turn_value, turn_time/2);
 		}
 		status = 1;
 	}
-	*next_crossroad = 0;
 }
 
 /*! \brief Let the robot follow a line.

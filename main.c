@@ -7,6 +7,7 @@ int left_speed;
 int right_speed;
 int speed;
 
+#include "queue.h"
 #include "steering.h"
 #include "commands.h"
 
@@ -44,6 +45,12 @@ task main(){
 	int sensor_lowest_value = 30;
 	int sensor_black_value = 45;
 
+	/*
+	* Initialize Queue
+	*/
+	Queue next_crossroad_queue;
+    init_queue(&next_crossroad_queue);
+
 	while (status >= 0)
 	{
 		int right_sensor = SensorValue(rightSensor); // white is 60 black is 30
@@ -61,7 +68,7 @@ task main(){
 		nxtDisplayTextLine(2, "Distance: %d",distance);
 
 		// Check for bluetooth
-		check_bluetooth(&next_crossroad);
+		check_bluetooth(&next_crossroad_queue);
 
 		// Obstacle detected
 		if (distance < 20 && status != 5){
@@ -70,7 +77,7 @@ task main(){
 
 		// Crossroad detected
 		else if (right_sensor < sensor_black_value && left_sensor < sensor_black_value){
-			handle_crossroad(&next_crossroad, turn_value, reverse_turn_value, turn_time);
+			handle_crossroad(&next_crossroad_queue, turn_value, reverse_turn_value, turn_time);
 		}
 
 		// Following line

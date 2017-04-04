@@ -43,6 +43,7 @@ task main(){
 	int turn_time = 900;
 	int sensor_lowest_value = 30;
 	int sensor_black_value = 45;
+	int correction_black = 7;
 
 	while (status >= 0)
 	{
@@ -71,6 +72,32 @@ task main(){
 		// Crossroad detected
 		else if (right_sensor < sensor_black_value && left_sensor < sensor_black_value){
 			handle_crossroad(&next_crossroad, turn_value, reverse_turn_value, turn_time);
+		}
+
+		else if (right_sensor < (sensor_black_value - correction_black)) {
+			while(SensorValue(rightSensor) < sensor_black_value){
+				turn(turn_value, reverse_turn_value, 2);
+			}
+			while(SensorValue(leftSensor) > (sensor_black_value)){
+				turn(turn_value, reverse_turn_value, 2);
+			}
+			turn(reverse_turn_value, turn_value, 200);
+			for(int i= 0; i < 500; i++) {
+				drive(left_sensor, right_sensor, sensor_lowest_value);
+			}
+		}
+
+		else if (left_sensor < (sensor_black_value - correction_black)) {
+			while(SensorValue(leftSensor) < sensor_black_value){
+				turn(reverse_turn_value, turn_value, 2);
+			}
+			while(SensorValue(rightSensor) > (sensor_black_value)){
+				turn(reverse_turn_value, turn_value, 2);
+			}
+			turn(turn_value, reverse_turn_value, 200);
+			for(int i= 0; i < 500; i++) {
+				drive(left_sensor, right_sensor, sensor_lowest_value);
+			}
 		}
 
 		// Following line

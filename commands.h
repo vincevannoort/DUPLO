@@ -20,7 +20,7 @@ void check_bluetooth(Queue *next_crossroad_queue) {
         stringFromChars(s, (char *) nRcvBuffer);
         if (s == "UP"){
             displayCenteredTextLine(3,"GO: UP");
-            if (status != 0) {
+            if (status != 6) {
                 enqueue(next_crossroad_queue, 3);
             }
             status = 1;
@@ -35,7 +35,7 @@ void check_bluetooth(Queue *next_crossroad_queue) {
         }
         else if (s == "DOWN"){
             brake(100);
-            status = 0;
+            status = 6;
         }
         else if (s == "FIRE"){
             displayCenteredTextLine(3, "TURBO: ACTIVATED");

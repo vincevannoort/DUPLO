@@ -28,7 +28,8 @@ task main(){
 	*	2 = Making turn
 	*	3 = On crossroad
 	*	4 = Obstacle detected
-	*	5 = Robot received stop command
+	*	5 = Robot braked on his own
+	* 6 = Robot received brake command
 	*/
 	status = 0;
 
@@ -70,7 +71,7 @@ task main(){
 		check_bluetooth(&next_crossroad_queue);
 
 		// Obstacle detected
-		if (distance < 20 && status != 5){
+		if (distance < 20 && status != 5 && status != 6){
 			avoid_obstacle(turn_time);
 		}
 
@@ -106,7 +107,7 @@ task main(){
 		}
 
 		// Following line
-		else if ( status != 3 && status != 4 && status != 5){
+		else if ( status != 3 && status != 4 && status != 5 && status != 6){
 			drive(left_sensor, right_sensor, sensor_lowest_value);
 		}
 	}

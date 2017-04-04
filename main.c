@@ -1,6 +1,6 @@
-#pragma config(Sensor, S3, rightSensor, sensorLightActive)
-#pragma config(Sensor, S2, sonarSensor, sensorSONAR)
 #pragma config(Sensor, S1, leftSensor, sensorLightActive)
+#pragma config(Sensor, S2, sonarSensor, sensorSONAR)
+#pragma config(Sensor, S3, rightSensor, sensorLightActive)
 
 int status;
 int left_speed;
@@ -13,7 +13,7 @@ int speed;
 
 
 task main(){
-	/*
+ /*
 	*	0 = stop
 	*	1 = turn left
 	*	2 = turn right
@@ -21,7 +21,7 @@ task main(){
 	*/
 	int next_crossroad = 0;
 
-	/*
+ /*
 	*	Status describes the state the robot is currently in.
 	*	0 = Robot does nothing
 	*	1 = Folowing line
@@ -32,9 +32,8 @@ task main(){
 	*/
 	status = 0;
 
-	/*
-	* Controlling robot's speed
-	*/
+	//Controlling robot's speed
+
 	speed = 5;
 	left_speed = 0;
 	right_speed = 0;
@@ -46,11 +45,10 @@ task main(){
 	int sensor_black_value = 45;
 	int correction_black = 7;
 
-	/*
-	* Initialize Queue
-	*/
+	// Initialize Queue
+
 	Queue next_crossroad_queue;
-    init_queue(&next_crossroad_queue);
+  init_queue(&next_crossroad_queue);
 
 	while (status >= 0)
 	{

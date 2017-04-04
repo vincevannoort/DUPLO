@@ -36,7 +36,7 @@ void check_bluetooth(Queue *next_crossroad_queue) {
         }
         else if (s == "FIRE"){
             displayCenteredTextLine(3, "TURBO: ACTIVATED");
-        	speed +=1;
+        		speed +=1;
         }
         displayCenteredTextLine(4, s);
     }

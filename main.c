@@ -13,7 +13,7 @@ int speed;
 
 
 task main(){
-   /*
+	/*
 	*	0 = stop
 	*	1 = turn left
 	*	2 = turn right
@@ -21,7 +21,7 @@ task main(){
 	*/
 	int next_crossroad = 0;
 
-   /*
+	/*
 	*	Status describes the state the robot is currently in.
 	*	0 = Robot does nothing
 	*	1 = Folowing line

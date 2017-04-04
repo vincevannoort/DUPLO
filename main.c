@@ -68,7 +68,7 @@ task main(){
 		nxtDisplayTextLine(2, "Distance: %d",distance);
 
 		// Check for bluetooth
-		check_bluetooth(&next_crossroad, &next_crossroad_queue);
+		check_bluetooth(&next_crossroad_queue);
 
 		// Obstacle detected
 		if (distance < 20 && status != 5){

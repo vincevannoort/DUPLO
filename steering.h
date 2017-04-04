@@ -47,26 +47,27 @@ void avoid_obstacle(int turn_time){
 	status = 1;
 }
 
-void handle_crossroad(int *next_crossroad, int turn_value, int reverse_turn_value, int turn_time){
+void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int turn_time){
+	int next_crossroad_queue_item = dequeue(next_crossroad_queue);
 	status = 3;
-	if (*next_crossroad  == 0 ){
+
+	if (next_crossroad_queue_item  == 0 ){
 		brake(0);
 	} else {
 		// turn left @ crossroad
-		if (*next_crossroad  == 1){
+		if (next_crossroad_queue_item  == 1){
 			turn(reverse_turn_value, turn_value, turn_time);
 		}
 		// turn right @ crossroad
-		else if (*next_crossroad == 2){
+		else if (next_crossroad_queue_item == 2){
 			turn(turn_value, reverse_turn_value, turn_time);
 		}
 		// go straight @ crossroad
-		else if (*next_crossroad == 3){
+		else if (next_crossroad_queue_item == 3){
 			turn(turn_value, turn_value, turn_time/2);
 		}
 		status = 1;
 	}
-	*next_crossroad = 0;
 }
 
 void drive(int left_sensor, int right_sensor, int sensor_lowest_value){

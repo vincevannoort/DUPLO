@@ -1,5 +1,3 @@
-long nLastXmitTimeStamp = nPgmTime;
-long nDeltaTime         = 0;
 const int kMaxSizeOfMessage = 30;
 const int INBOX = 5;
 TFileIOResult nBTCmdRdErrorStatus;

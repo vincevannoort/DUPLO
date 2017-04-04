@@ -9,7 +9,6 @@ int speed;
 
 #include "steering.h"
 #include "commands.h"
-//#include "monitoring.h"
 
 
 task main(){

@@ -4,6 +4,10 @@ TFileIOResult nBTCmdRdErrorStatus;
 int nSizeOfMessage;
 ubyte nRcvBuffer[kMaxSizeOfMessage];
 
+/*! \brief Check if commands are given by the app.
+ *
+ *	\param[in] int *next_crossroad The action that has to be executed on the next crossroad.
+ */
 void check_bluetooth(int *next_crossroad) {
     // Check to see if a message is available
     nSizeOfMessage = cCmdMessageGetSize(INBOX);

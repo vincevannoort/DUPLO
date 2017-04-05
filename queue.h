@@ -52,7 +52,6 @@ int dequeue(Queue* pq) {
             pq->tail = 0;
         }
         return data_dequeue;
-    } else {
-        return 0;
     }
+    return 0;
 }

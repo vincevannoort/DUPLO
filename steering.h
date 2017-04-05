@@ -58,7 +58,7 @@ void avoid_obstacle(int turn_time){
  *	 If no option is given the robot will stop. It will clear the next_crossroad variable so new instructions
  *   can be given or the robot will stop at the next crossroad.
  *
- *  \param[in] int *next_crossroad Pointer to the value with instructions for the next turn.
+ *  \param[in] Queue *next_crossroad_queue Pointer to the queue which contains the next instructions for crossroads
  *  \param[in] int turn_value Speed for the forward moving motor.
  *  \param[in] int reverse_turn_value Speed for the reverse moving motor.
  *  \param[in] int turn_time Time the robot waits between each step in the turning process.
@@ -101,6 +101,15 @@ void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
 	status = 1;
 }
 
+/*! \brief Handles a sharp turn, for example a 90 degree turn
+ *
+ *  \param[in] int turn_value Speed for the forward moving motor.
+ *  \param[in] int reverse_turn_value Speed for the reverse moving motor.
+ *  \param[in] int sensor_black_value Threshold value for a black reading.
+ *  \param[in] int sensor_lowest_value Lowest value for a sensor reading.
+ *  \param[in] tSensors first_sensor Sensor linked to the motor to turn to.
+ *  \param[in] tSensors second_sensor Sensor linked to the motor to readjust to.
+*/
 void handle_sharp_turn(int turn_value, int reverse_turn_value, int sensor_black_value, int sensor_lowest_value, tSensors first_sensor, tSensors second_sensor){
 	while(SensorValue(first_sensor) < sensor_black_value){
 		turn(turn_value, reverse_turn_value, 2);

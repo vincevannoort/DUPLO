@@ -79,29 +79,11 @@ task main(){
 		}
 
 		else if (right_sensor < (sensor_black_value - correction_black)) {
-			while(SensorValue(rightSensor) < sensor_black_value){
-				turn(turn_value, reverse_turn_value, 2);
-			}
-			while(SensorValue(leftSensor) > (sensor_black_value)){
-				turn(turn_value, reverse_turn_value, 2);
-			}
-			turn(reverse_turn_value, turn_value, 200);
-			for(int i= 0; i < 500; i++) {
-				drive(left_sensor, right_sensor, sensor_lowest_value);
-			}
+			handle_sharp_turn(turn_value, reverse_turn_value, sensor_black_value, sensor_lowest_value, rightSensor, leftSensor);
 		}
 
 		else if (left_sensor < (sensor_black_value - correction_black)) {
-			while(SensorValue(leftSensor) < sensor_black_value){
-				turn(reverse_turn_value, turn_value, 2);
-			}
-			while(SensorValue(rightSensor) > (sensor_black_value)){
-				turn(reverse_turn_value, turn_value, 2);
-			}
-			turn(turn_value, reverse_turn_value, 200);
-			for(int i= 0; i < 500; i++) {
-				drive(left_sensor, right_sensor, sensor_lowest_value);
-			}
+			handle_sharp_turn(reverse_turn_value, turn_value, sensor_black_value, sensor_lowest_value, leftSensor, rightSensor);
 		}
 
 		// Following line

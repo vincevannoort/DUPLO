@@ -100,3 +100,16 @@ void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
 	motor[motorC] = right_speed;
 	status = 1;
 }
+
+void handle_sharp_turn(int turn_value, int reverse_turn_value, int sensor_black_value, int sensor_lowest_value, tSensors first_sensor, tSensors second_sensor){
+	while(SensorValue(first_sensor) < sensor_black_value){
+		turn(turn_value, reverse_turn_value, 2);
+	}
+	while(SensorValue(second_sensor) > (sensor_black_value)){
+		turn(turn_value, reverse_turn_value, 2);
+	}
+	turn(reverse_turn_value, turn_value, 200);
+	for(int i= 0; i < 500; i++) {
+		drive(SensorValue(leftSensor), SensorValue(rightSensor), sensor_lowest_value);
+	}
+}

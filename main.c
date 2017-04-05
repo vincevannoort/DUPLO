@@ -51,8 +51,8 @@ task main(){
 
 	while (status >= 0)
 	{
-		int right_sensor = SensorValue(rightSensor); // white is 60 black is 30
-		int left_sensor = SensorValue(leftSensor); // white is 60 black is 30
+		int right_sensor = SensorValue(rightSensor);
+		int left_sensor = SensorValue(leftSensor);
 		int distance = SensorValue[sonarSensor];
 
 		if (status == 1) {

@@ -4,9 +4,16 @@ TFileIOResult nBTCmdRdErrorStatus;
 int nSizeOfMessage;
 ubyte nRcvBuffer[kMaxSizeOfMessage];
 
-/*! \brief Check if commands are given by the app.
+/*! @file
+ * \brief Check if commands are given by the app.
+ * \section commandfunction check_bluetooth
  *
- *	\param[in] int *next_crossroad The action that has to be executed on the next crossroad.
+ * This function checks for input from the app through Bluetooth.
+ * If one of the arrows is pressed, we enqueue a direction for the next crossroad.
+ * Exceptions to this are the down arrow, which stops the robot, or the up arrow while the robot is stopped, because that only restarts it.
+ * The central button increases its speed.
+ *
+ * \param[in] int *next_crossroad The action that has to be executed on the next crossroad.
  */
 void check_bluetooth(Queue *next_crossroad_queue) {
     // Check to see if a message is available

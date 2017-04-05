@@ -1,12 +1,15 @@
-/*! \file
- *  \brief This file provides the steering functions for the robot.
+/*! @file
+ * \brief This file provides the steering functions for the robot.
+ * \section file steering
  */
 
-/*! \brief Turn the robot left or right depending on the degrees given.
+/*!
+ * \brief Turn the robot left or right depending on the values provided.
+ * \section turnfunction turn
  *
- *  \param[in] int motor_left Value for the left motor
- *  \param[in] int motor_right Value for the right motor
- * 	\param[in] int turn_time Delay between each step in the turning process.
+ * \param[in] int motor_left Value for the left motor
+ * \param[in] int motor_right Value for the right motor
+ * \param[in] int turn_time Delay between each step in the turning process.
  */
 void turn(int motor_left, int motor_right, int turn_time) {
 	left_speed = motor_left * speed;
@@ -16,9 +19,16 @@ void turn(int motor_left, int motor_right, int turn_time) {
 	wait1Msec(turn_time);
 }
 
-/*! \brief Stop the robot in a given time.
+/*!
+ * \brief Stop the robot in a given time.
+ * \section brakefunction brake
  *
- *	\param[in] int time_to_stop, the time in which the robot must be standing still
+ * Stop the robot within a certain time based on the provided parameter.
+ * If it is 0, we stop immediately, else we slow down in steps.
+ * Once the speed of both motors reaches 0, we end our loop.
+ * After that, we stop the sound, reset the status and speed (factor).
+ *
+ * \param[in] int time_to_stop, the number of steps in which the robot stops
  */
 void brake(int time_to_stop){
 	if (time_to_stop != 0) {
@@ -43,9 +53,15 @@ void brake(int time_to_stop){
 	status = 5;
 	speed = 5;
 }
-/*! \brief Let the robot stop and then make a 180 degree turn.
+
+/*!
+ * \brief Let the robot stop and then make a 180 degree turn.
+ * \section obstaclefunction avoid_obstacle
  *
- *  \param[in] int turn_time The time in wich the robot makes the turn.
+ * If we encounter an obstacle, we first brake using our brake function.
+ * After that, we use the turn function to turn 180 degrees and reset the status.
+ *
+ * \param[in] int turn_time The time in wich the robot makes the turn.
  */
 void avoid_obstacle(int turn_time){
 	brake(100);
@@ -53,15 +69,18 @@ void avoid_obstacle(int turn_time){
 	status = 1;
 }
 
-/*! \brief Gives the robot instructions when it reaches a crossroad.
- *	 Check if a instruction is given by the app. If that is the case the robot will execute the given action.
- *	 If no option is given the robot will stop. It will clear the next_crossroad variable so new instructions
- *   can be given or the robot will stop at the next crossroad.
+/*!
+ * \brief Gives the robot instructions when it reaches a crossroad.
+ * \section crossroadfunction handle_crossroad
  *
- *  \param[in] Queue *next_crossroad_queue Pointer to the queue which contains the next instructions for crossroads
- *  \param[in] int turn_value Speed for the forward moving motor.
- *  \param[in] int reverse_turn_value Speed for the reverse moving motor.
- *  \param[in] int turn_time Time the robot waits between each step in the turning process.
+ * If we encounter a crossroad, we decide which way to go based on input from the app, connected via Bluetooth.
+ * Bluetooth input is stored in a Queue, we dequeue one value from it and act based on that value.
+ * If the Queue is emtpy, it returns 0, so we brake and wait until another value is provided.
+ *
+ * \param[in] Queue *next_crossroad_queue Pointer to the queue which contains the next instructions for crossroads
+ * \param[in] int turn_value Speed for the forward moving motor.
+ * \param[in] int reverse_turn_value Speed for the reverse moving motor.
+ * \param[in] int turn_time Time the robot waits between each step in the turning process.
  */
 void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int turn_time){
 	int next_crossroad_queue_item = dequeue(next_crossroad_queue);
@@ -86,11 +105,16 @@ void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_t
 	}
 }
 
-/*! \brief Let the robot follow a line.
+/*!
+ * \brief Let the robot follow a line.
+ * \section drivefunction drive
  *
- *  \param[in] int left_sensor Value of the left light sensor.
- *  \param[in] int right_sensor Value of the right sensor.
- *  \param[in] int sensor_lowest_value The lowest value with a migration background.
+ * Let the motor speed depend on sensor input on that side of the robot.
+ * The higher (lighter/whiter) the input value, the higher the motor speed.
+ *
+ * \param[in] int left_sensor Value of the left light sensor.
+ * \param[in] int right_sensor Value of the right sensor.
+ * \param[in] int sensor_lowest_value The lowest value with a migration background.
 */
 void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
 	int correction = 9;
@@ -101,14 +125,18 @@ void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
 	status = 1;
 }
 
-/*! \brief Handles a sharp turn, for example a 90 degree turn
+/*!
+ * \brief Handles a sharp turn, for example a 90 degree turn
+ * \section sharpturnfunction handle_sharp_turn
  *
- *  \param[in] int turn_value Speed for the forward moving motor.
- *  \param[in] int reverse_turn_value Speed for the reverse moving motor.
- *  \param[in] int sensor_black_value Threshold value for a black reading.
- *  \param[in] int sensor_lowest_value Lowest value for a sensor reading.
- *  \param[in] tSensors first_sensor Sensor linked to the motor to turn to.
- *  \param[in] tSensors second_sensor Sensor linked to the motor to readjust to.
+ * We use the turn function to turn left or right, depending on input, the we readjust in the other direction and steady it with the drive function.
+ *
+ * \param[in] int turn_value Speed for the forward moving motor.
+ * \param[in] int reverse_turn_value Speed for the reverse moving motor.
+ * \param[in] int sensor_black_value Threshold value for a black reading.
+ * \param[in] int sensor_lowest_value Lowest value for a sensor reading.
+ * \param[in] tSensors first_sensor Sensor linked to the motor to turn to.
+ * \param[in] tSensors second_sensor Sensor linked to the motor to readjust to.
 */
 void handle_sharp_turn(int turn_value, int reverse_turn_value, int sensor_black_value, int sensor_lowest_value, tSensors first_sensor, tSensors second_sensor){
 	while(SensorValue(first_sensor) < sensor_black_value){

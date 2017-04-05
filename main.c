@@ -1,3 +1,19 @@
+/*! @file
+ * \brief Run the robot
+ * \section function main
+ *
+ * This function contains the main loop of the robot, it checks all inputs and acts on it.
+ * First, we set a number of variables, status and speed are global.
+ * Within the actual loop, we check our sensors and store their values.
+ * If the robot is moving, it makes a sound.
+ * Then we check for Bluetooth input.
+ * After that, we check if we encounter an obstacle.
+ * Next, we check for a crossroad.
+ * Then we move on to checking for sharp turns.
+ * Finally, we use our 'regular' function to follow a relatively straight line.
+ *
+ */
+
 #pragma config(Sensor, S1, leftSensor, sensorLightActive)
 #pragma config(Sensor, S2, sonarSensor, sensorSONAR)
 #pragma config(Sensor, S3, rightSensor, sensorLightActive)
@@ -19,7 +35,8 @@ task main(){
 	*	2 = turn right
 	*	3 = go straight
 	*/
-	int next_crossroad = 0;
+	Queue next_crossroad_queue;
+ 	init_queue(&next_crossroad_queue);
 
 	/*
 	*	Status describes the state the robot is currently in.
@@ -45,16 +62,14 @@ task main(){
 	int sensor_black_value = 45;
 	int correction_black = 7;
 
-	// Initialize Queue
-	Queue next_crossroad_queue;
- 	init_queue(&next_crossroad_queue);
-
 	while (status >= 0)
 	{
+		// Check sensors
 		int right_sensor = SensorValue(rightSensor);
 		int left_sensor = SensorValue(leftSensor);
 		int distance = SensorValue[sonarSensor];
 
+		// Play sound
 		if (status == 1) {
 			playSoundFile("duplo.rso");
 		}
@@ -78,10 +93,12 @@ task main(){
 			handle_crossroad(&next_crossroad_queue, turn_value, reverse_turn_value, turn_time);
 		}
 
+		// Sharp right turn detected
 		else if (right_sensor < (sensor_black_value - correction_black)) {
 			handle_sharp_turn(turn_value, reverse_turn_value, sensor_black_value, sensor_lowest_value, rightSensor, leftSensor);
 		}
 
+		// Sharp left turn detected
 		else if (left_sensor < (sensor_black_value - correction_black)) {
 			handle_sharp_turn(reverse_turn_value, turn_value, sensor_black_value, sensor_lowest_value, leftSensor, rightSensor);
 		}

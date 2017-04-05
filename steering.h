@@ -145,7 +145,7 @@ void handle_sharp_turn(int turn_value, int reverse_turn_value, int sensor_black_
 	while(SensorValue(second_sensor) > (sensor_black_value)){
 		turn(turn_value, reverse_turn_value, 2);
 	}
-	turn(reverse_turn_value, turn_value, 200);
+	turn(reverse_turn_value, turn_value, 75);
 	for(int i= 0; i < 500; i++) {
 		drive(SensorValue(leftSensor), SensorValue(rightSensor), sensor_lowest_value);
 	}

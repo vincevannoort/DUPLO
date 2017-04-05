@@ -1,3 +1,7 @@
+#pragma config(Sensor, S1, leftSensor, sensorLightActive)
+#pragma config(Sensor, S2, sonarSensor, sensorSONAR)
+#pragma config(Sensor, S3, rightSensor, sensorLightActive)
+
 /*! @file
  * \brief Run the robot
  * \section function main
@@ -13,10 +17,6 @@
  * Finally, we use our 'regular' function to follow a relatively straight line.
  *
  */
-
-#pragma config(Sensor, S1, leftSensor, sensorLightActive)
-#pragma config(Sensor, S2, sonarSensor, sensorSONAR)
-#pragma config(Sensor, S3, rightSensor, sensorLightActive)
 
 int status;
 int left_speed;
@@ -60,7 +60,7 @@ task main(){
 	int turn_time = 900;
 	int sensor_lowest_value = 30;
 	int sensor_black_value = 45;
-	int correction_black = 7;
+	int correction_black = 8;
 
 	while (status >= 0)
 	{
@@ -84,7 +84,7 @@ task main(){
 		check_bluetooth(&next_crossroad_queue);
 
 		// Obstacle detected
-		if (distance < 20 && status != 5 && status != 6){
+		if (distance < 25 && status != 5 && status != 6){
 			avoid_obstacle(turn_time);
 		}
 
@@ -94,12 +94,12 @@ task main(){
 		}
 
 		// Sharp right turn detected
-		else if (right_sensor < (sensor_black_value - correction_black)) {
+		else if (right_sensor < (sensor_black_value - correction_black)){
 			handle_sharp_turn(turn_value, reverse_turn_value, sensor_black_value, sensor_lowest_value, rightSensor, leftSensor);
 		}
 
 		// Sharp left turn detected
-		else if (left_sensor < (sensor_black_value - correction_black)) {
+		else if (left_sensor < (sensor_black_value - correction_black)){
 			handle_sharp_turn(reverse_turn_value, turn_value, sensor_black_value, sensor_lowest_value, leftSensor, rightSensor);
 		}
 

@@ -15,7 +15,7 @@ typedef struct {
  *
  * \param[in] Queue pq, queue struct to initialize
  */
-void init_queue(Queue* pq) {
+void init_queue(Queue* pq){
     pq->head = -1;
     pq->tail = 0;
 }
@@ -26,8 +26,8 @@ void init_queue(Queue* pq) {
  * \param[in] Queue pq, queue struct to queue in
  * \param[in] int data, data to queue in struct
  */
-void enqueue(Queue* pq, int data) {
-    if (pq->tail != pq->head) {
+void enqueue(Queue* pq, int data){
+    if (pq->tail != pq->head){
         // if queue was empty set head to 0
         if(pq->head == -1)
             pq->head = 0;
@@ -48,14 +48,14 @@ void enqueue(Queue* pq, int data) {
  *
  * \return int, 0 if queue is empty, data if queue is not empty
  */
-int dequeue(Queue* pq) {
-    if (pq->head >= 0) {
+int dequeue(Queue* pq){
+    if (pq->head >= 0){
         int data_dequeue = pq->a[pq->head];
 
         // dequeue data
         pq->head = ++(pq->head) % QUEUESIZE;
 
-        if(pq->head == pq->tail) {
+        if(pq->head == pq->tail){
             pq->head = -1;
             pq->tail = 0;
         }

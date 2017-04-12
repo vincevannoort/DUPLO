@@ -30,7 +30,7 @@ void check_bluetooth(Queue *next_crossroad_queue){
             displayCenteredTextLine(3,"GO: UP");
             if (status != 6) {
                 enqueue(next_crossroad_queue, 3);
-            }else{
+            } else {
             status = 1;
           }
         }

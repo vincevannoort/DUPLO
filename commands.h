@@ -15,7 +15,7 @@ ubyte nRcvBuffer[kMaxSizeOfMessage];
  *
  * \param[in] int *next_crossroad The action that has to be executed on the next crossroad.
  */
-void check_bluetooth(Queue *next_crossroad_queue) {
+void check_bluetooth(Queue *next_crossroad_queue){
     // Check to see if a message is available
     nSizeOfMessage = cCmdMessageGetSize(INBOX);
     if (nSizeOfMessage > kMaxSizeOfMessage){

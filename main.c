@@ -90,7 +90,7 @@ task main(){
 
 		// Crossroad detected
 		else if ((right_sensor < sensor_black_value && left_sensor < sensor_black_value) || status == 5){
-			handle_crossroad(&next_crossroad_queue, turn_value, reverse_turn_value, turn_time);
+			handle_crossroad(&next_crossroad_queue, turn_value, reverse_turn_value, sensor_black_value);
 		}
 
 		// Sharp right turn detected

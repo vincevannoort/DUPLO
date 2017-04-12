@@ -11,12 +11,14 @@
  * \param[in] int motor_right Value for the right motor
  * \param[in] int turn_time Delay between each step in the turning process.
  */
-void turn(int motor_left, int motor_right, int turn_time) {
+void turn(int motor_left, int motor_right, int sensor_black_value, tSensors sensor) {
 	left_speed = motor_left * speed;
 	right_speed = motor_right * speed;
 	motor[motorA] = left_speed;
 	motor[motorC] = right_speed;
-	wait1Msec(turn_time);
+	wait1Msec(500);
+	while(SensorValue(sensor) > (sensor_black_value + 5))displayCenteredTextLine(3, "%d  %d", SensorValue(sensor), sensor_black_value);
+	while(SensorValue(sensor) < (sensor_black_value - 5))displayCenteredTextLine(3, "%d  %d", SensorValue(sensor), sensor_black_value);
 }
 
 /*!
@@ -65,7 +67,11 @@ void brake(int time_to_stop){
  */
 void avoid_obstacle(int turn_time){
 	brake(100);
-	turn(5, -5, turn_time*2);
+	left_speed = 5;
+	right_speed = -5;
+	motor[motorA] = left_speed * speed;
+	motor[motorC] = right_speed * speed;
+	wait1Msec(turn_time*2);
 	status = 1;
 }
 
@@ -82,7 +88,7 @@ void avoid_obstacle(int turn_time){
  * \param[in] int reverse_turn_value Speed for the reverse moving motor.
  * \param[in] int turn_time Time the robot waits between each step in the turning process.
  */
-void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int turn_time){
+void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int sensor_black_value){
 	int next_crossroad_queue_item = dequeue(next_crossroad_queue);
 	status = 3;
 	displayCenteredTextLine(3, "%d", next_crossroad_queue_item);
@@ -91,16 +97,18 @@ void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_t
 	} else {
 		// turn left @ crossroad
 		if (next_crossroad_queue_item  == 1){
-			turn(reverse_turn_value, turn_value, turn_time);
+			turn(reverse_turn_value, turn_value, sensor_black_value, rightSensor);
 		}
 		// turn right @ crossroad
 		else if (next_crossroad_queue_item == 2){
-			turn(turn_value, reverse_turn_value, turn_time);
+			turn(turn_value, reverse_turn_value, sensor_black_value, leftSensor);
 		}
 		// go straight @ crossroad
 		else if (next_crossroad_queue_item == 3){
-			turn(turn_value, turn_value, turn_time/2);
-		}
+			motor[motorA] = 10;
+			motor[motorC] = 10;
+			wait1Msec(400);
+			}
 		status = 1;
 	}
 }
@@ -117,7 +125,7 @@ void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_t
  * \param[in] int sensor_lowest_value The lowest value with a migration background.
 */
 void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
-	int correction = 9;
+	int correction = 14 + speed / 5;
 	left_speed = (((left_sensor - sensor_lowest_value) / 3) * speed) - correction;
 	right_speed = (((right_sensor - sensor_lowest_value) / 3) * speed) - correction;
 	motor[motorA] = left_speed;
@@ -140,14 +148,24 @@ void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
 */
 void handle_sharp_turn(int turn_value, int reverse_turn_value, int sensor_black_value, int sensor_lowest_value, tSensors first_sensor, tSensors second_sensor){
 	while(SensorValue(second_sensor) > (sensor_black_value)){
-		turn(turn_value, reverse_turn_value, 2);
+		left_speed = turn_value * speed;
+		right_speed = reverse_turn_value * speed;
+		motor[motorA] = left_speed;
+		motor[motorC] = right_speed;
+		if(SensorValue(first_sensor) < sensor_black_value - 5 && SensorValue(second_sensor) < sensor_black_value - 5){
+			status = 5;
+			break;
+		}
 	}
-	if(SensorValue(first_sensor) < sensor_black_value - 5 && SensorValue(second_sensor) < sensor_black_value - 5){
-		;
-	} else {
-		turn(reverse_turn_value, turn_value, 75);
+	if (status != 5) {
+		left_speed = reverse_turn_value * speed;
+		right_speed = turn_value * speed;
+		motor[motorA] = left_speed;
+		motor[motorC] = right_speed;
+		wait1Msec(75);
 		for(int i= 0; i < 500; i++){
 			drive(SensorValue(leftSensor), SensorValue(rightSensor), sensor_lowest_value);
 		}
 	}
+
 }

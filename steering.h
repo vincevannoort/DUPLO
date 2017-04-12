@@ -85,7 +85,7 @@ void avoid_obstacle(int turn_time){
 void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int turn_time){
 	int next_crossroad_queue_item = dequeue(next_crossroad_queue);
 	status = 3;
-
+	displayCenteredTextLine(3, "%d", next_crossroad_queue_item);
 	if (next_crossroad_queue_item  == 0 ){
 		brake(0);
 	} else {
@@ -142,5 +142,12 @@ void handle_sharp_turn(int turn_value, int reverse_turn_value, int sensor_black_
 	while(SensorValue(second_sensor) > (sensor_black_value)){
 		turn(turn_value, reverse_turn_value, 2);
 	}
-	turn(reverse_turn_value, turn_value, 75);
+	if(SensorValue(first_sensor) < sensor_black_value - 5 && SensorValue(second_sensor) < sensor_black_value - 5){
+		;
+	} else {
+		turn(reverse_turn_value, turn_value, 75);
+		for(int i= 0; i < 500; i++){
+			drive(SensorValue(leftSensor), SensorValue(rightSensor), sensor_lowest_value);
+		}
+	}
 }

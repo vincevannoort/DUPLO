@@ -18,8 +18,9 @@ ubyte nRcvBuffer[kMaxSizeOfMessage];
 void check_bluetooth(Queue *next_crossroad_queue) {
     // Check to see if a message is available
     nSizeOfMessage = cCmdMessageGetSize(INBOX);
-    if (nSizeOfMessage > kMaxSizeOfMessage)
+    if (nSizeOfMessage > kMaxSizeOfMessage){
         nSizeOfMessage = kMaxSizeOfMessage;
+      }
     if (nSizeOfMessage > 0){
         nBTCmdRdErrorStatus = cCmdMessageRead(nRcvBuffer, nSizeOfMessage, INBOX);
         nRcvBuffer[nSizeOfMessage] = '\0';
@@ -29,8 +30,9 @@ void check_bluetooth(Queue *next_crossroad_queue) {
             displayCenteredTextLine(3,"GO: UP");
             if (status != 6) {
                 enqueue(next_crossroad_queue, 3);
-            }
+            }else{
             status = 1;
+          }
         }
         else if (s == "LEFT"){
             displayCenteredTextLine(3, "GO: LEFT");

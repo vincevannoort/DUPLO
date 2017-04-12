@@ -89,18 +89,18 @@ task main(){
 		}
 
 		// Crossroad detected
-		else if (right_sensor < sensor_black_value && left_sensor < sensor_black_value){
+		else if ((right_sensor < sensor_black_value && left_sensor < sensor_black_value) || status == 5){
 			handle_crossroad(&next_crossroad_queue, turn_value, reverse_turn_value, turn_time);
 		}
 
 		// Sharp right turn detected
 		else if (right_sensor < (sensor_black_value - correction_black)){
-			handle_sharp_turn(turn_value, reverse_turn_value, sensor_black_value, sensor_lowest_value, rightSensor, leftSensor);
+			handle_sharp_turn(turn_value, reverse_turn_value - 5, sensor_black_value, sensor_lowest_value, rightSensor, leftSensor);
 		}
 
 		// Sharp left turn detected
 		else if (left_sensor < (sensor_black_value - correction_black)){
-			handle_sharp_turn(reverse_turn_value, turn_value, sensor_black_value, sensor_lowest_value, leftSensor, rightSensor);
+			handle_sharp_turn(reverse_turn_value - 5, turn_value, sensor_black_value, sensor_lowest_value, leftSensor, rightSensor);
 		}
 
 		// Following line

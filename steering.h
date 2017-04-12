@@ -4,19 +4,28 @@
  */
 
 /*!
- * \brief Turn the robot left or right depending on the values provided.
+ * \brief Turn the robot in a direction depending on the values provided.
  * \section turnfunction turn
+ *
+ * First, we only turn with the provided values, then we start checking our sensor and stop once it sees black.
  *
  * \param[in] int motor_left Value for the left motor
  * \param[in] int motor_right Value for the right motor
- * \param[in] int turn_time Delay between each step in the turning process.
+ * \param[in] int sensor_black_value A threshold value, below which we assume the sensor value is black
+ * \param[in] tSensors sensor The sensor we need to check the value of.
  */
-void turn(int motor_left, int motor_right, int turn_time) {
+void turn(int motor_left, int motor_right, int sensor_black_value, tSensors sensor){
 	left_speed = motor_left * speed;
 	right_speed = motor_right * speed;
 	motor[motorA] = left_speed;
 	motor[motorC] = right_speed;
-	wait1Msec(turn_time);
+	wait1Msec(500);
+	while(SensorValue(sensor) > (sensor_black_value + 5)){
+		displayCenteredTextLine(3, "%d  %d", SensorValue(sensor), sensor_black_value);
+	}
+	while(SensorValue(sensor) < (sensor_black_value - 5)){
+		displayCenteredTextLine(3, "%d  %d", SensorValue(sensor), sensor_black_value);
+	}
 }
 
 /*!
@@ -59,13 +68,17 @@ void brake(int time_to_stop){
  * \section obstaclefunction avoid_obstacle
  *
  * If we encounter an obstacle, we first brake using our brake function.
- * After that, we use the turn function to turn 180 degrees and reset the status.
+ * After that, we turn 180 degrees and reset the status.
  *
  * \param[in] int turn_time The time in wich the robot makes the turn.
  */
 void avoid_obstacle(int turn_time){
 	brake(100);
-	turn(5, -5, turn_time*2);
+	left_speed = 5;
+	right_speed = -5;
+	motor[motorA] = left_speed * speed;
+	motor[motorC] = right_speed * speed;
+	wait1Msec(turn_time*2);
 	status = 1;
 }
 
@@ -80,27 +93,29 @@ void avoid_obstacle(int turn_time){
  * \param[in] Queue *next_crossroad_queue Pointer to the queue which contains the next instructions for crossroads
  * \param[in] int turn_value Speed for the forward moving motor.
  * \param[in] int reverse_turn_value Speed for the reverse moving motor.
- * \param[in] int turn_time Time the robot waits between each step in the turning process.
+ * \param[in] int sensor_black_value A threshold value, below which we assume the sensor value is black.
  */
-void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int turn_time){
+void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_turn_value, int sensor_black_value){
 	int next_crossroad_queue_item = dequeue(next_crossroad_queue);
 	status = 3;
-
+	displayCenteredTextLine(3, "%d", next_crossroad_queue_item);
 	if (next_crossroad_queue_item  == 0 ){
 		brake(0);
 	} else {
 		// turn left @ crossroad
 		if (next_crossroad_queue_item  == 1){
-			turn(reverse_turn_value, turn_value, turn_time);
+			turn(reverse_turn_value, turn_value, sensor_black_value, rightSensor);
 		}
 		// turn right @ crossroad
 		else if (next_crossroad_queue_item == 2){
-			turn(turn_value, reverse_turn_value, turn_time);
+			turn(turn_value, reverse_turn_value, sensor_black_value, leftSensor);
 		}
 		// go straight @ crossroad
 		else if (next_crossroad_queue_item == 3){
-			turn(turn_value, turn_value, turn_time/2);
-		}
+			motor[motorA] = 10;
+			motor[motorC] = 10;
+			wait1Msec(400);
+			}
 		status = 1;
 	}
 }
@@ -117,7 +132,7 @@ void handle_crossroad(Queue *next_crossroad_queue, int turn_value, int reverse_t
  * \param[in] int sensor_lowest_value The lowest value with a migration background.
 */
 void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
-	int correction = 9;
+	int correction = 14 + speed / 5;
 	left_speed = (((left_sensor - sensor_lowest_value) / 3) * speed) - correction;
 	right_speed = (((right_sensor - sensor_lowest_value) / 3) * speed) - correction;
 	motor[motorA] = left_speed;
@@ -129,7 +144,9 @@ void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
  * \brief Handles a sharp turn, for example a 90 degree turn
  * \section sharpturnfunction handle_sharp_turn
  *
- * We use the turn function to turn left or right, depending on input, the we readjust in the other direction and steady it with the drive function.
+ * We turn until either our sensor doesn't see black anymore or both our sensors do.
+ * If our one sensor doesn't see black anymore, the loop finishes and readjust slightly in the other direction.
+ * If both see black, we change the status to 5, so that during the next main loop, we end up at the crossroad function.
  *
  * \param[in] int turn_value Speed for the forward moving motor.
  * \param[in] int reverse_turn_value Speed for the reverse moving motor.
@@ -140,7 +157,24 @@ void drive(int left_sensor, int right_sensor, int sensor_lowest_value){
 */
 void handle_sharp_turn(int turn_value, int reverse_turn_value, int sensor_black_value, int sensor_lowest_value, tSensors first_sensor, tSensors second_sensor){
 	while(SensorValue(second_sensor) > (sensor_black_value)){
-		turn(turn_value, reverse_turn_value, 2);
+		left_speed = turn_value * speed;
+		right_speed = reverse_turn_value * speed;
+		motor[motorA] = left_speed;
+		motor[motorC] = right_speed;
+		if(SensorValue(first_sensor) < sensor_black_value - 5 && SensorValue(second_sensor) < sensor_black_value - 5){
+			status = 5;
+			break;
+		}
 	}
-	turn(reverse_turn_value, turn_value, 75);
+	if (status != 5) {
+		left_speed = reverse_turn_value * speed;
+		right_speed = turn_value * speed;
+		motor[motorA] = left_speed;
+		motor[motorC] = right_speed;
+		wait1Msec(75);
+		for(int i= 0; i < 500; i++){
+			drive(SensorValue(leftSensor), SensorValue(rightSensor), sensor_lowest_value);
+		}
+	}
+
 }
